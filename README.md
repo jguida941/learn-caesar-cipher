@@ -13,13 +13,14 @@ Repository Layout
 ```
 .
 ├── README.md
-├── updates.md                 # Packaging & roadmap notes
+├── updates.md                 # Packaging, CI, and release roadmap
+├── caesar_cli/               # Installable pip/pipx package scaffold
 └── src/
     ├── __init__.py
-    ├── caesar_educational.py  # Beginner-friendly walkthrough
-    ├── letter_mapping.py      # Alphabet rotation visualizer
     ├── caesar_cipher.py       # Intermediate implementation
+    ├── caesar_educational.py  # Beginner-friendly walkthrough
     ├── interactive_demo.py    # Interactive encode/decode loop
+    ├── letter_mapping.py      # Alphabet rotation visualizer
     └── caesar_qt_app.py       # Optional PyQt6 desktop app
 ```
 
@@ -39,6 +40,14 @@ Quick Start
    # Optional PyQt6 GUI (pip install PyQt6 first)
    python -m src.caesar_qt_app
    ```
+
+To explore the new package scaffold:
+
+```bash
+cd caesar_cli
+pip install -e .[dev]
+caesar --help
+```
 
 Sample Interactive Run
 ----------------------
@@ -63,7 +72,9 @@ Choose Your Path
 - **Sandbox – `src/interactive_demo.py`**  
   Provides an infinite loop where learners can choose encode or decode, pick shift values, and experiment with their own phrases.
 - **GUI – `src/caesar_qt_app.py`**  
-  PyQt6 desktop application with live encode/decode preview, alphabet mapping grid, ROT13 shortcut, and history panel (install PyQt6 to launch).
+  PyQt6 desktop application with a dark neon theme, live encode/decode preview, inline modular arithmetic explainer, ROT13 shortcut, mapping grid, and history panel (install PyQt6 to launch).
+- **CLI Package – `caesar_cli/`**  
+  Installable command-line tool (`caesar`) ready for pip/pipx packaging, complete with tests and optional extras.
 
 Educational Highlights
 ----------------------
@@ -83,6 +94,13 @@ Where to Go Next
 - The forward-looking roadmap and packaging plan live in `updates.md`.
 - Future work includes a polished CLI package (pip/pipx installable) and optional Homebrew wrapper as described in that document.
 - Contributions, suggestions, or classroom adaptations are welcome—feel free to open an issue or fork the repository.
+
+Testing & CI Roadmap
+--------------------
+- Current scripts are instructional and can be explored module-by-module as shown above.
+- The upgrade plan in `updates.md` documents the forthcoming CI pipeline with `ruff`, `mypy`, `pytest` + coverage gates, build checks, and optional mutation testing (`mutmut`).
+- Property-based tests using Hypothesis (e.g., verifying encode/decode round-trips, ROT13 invariants, and non-letter handling) are slated for the next development cycle.
+- Dev extras (`pytest`, `pytest-cov`, `mypy`, `ruff`, `hypothesis`, `build`, `twine`) will be exposed via `pyproject.toml` once the CLI packaging track begins.
 
 Further Reading
 ---------------
