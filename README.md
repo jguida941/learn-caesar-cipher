@@ -10,6 +10,7 @@ File Overview
 ```
 .
 ├── README.md
+├── updates.md
 └── src/
     ├── __init__.py
     ├── caesar_cipher.py
@@ -44,6 +45,19 @@ python -m src.interactive_demo
 Next Steps
 ----------
 Tweak the strings, expand the alphabet, or modify the shift logic to explore variants. Each file is self-contained—feel free to experiment without breaking the others.
+Check `updates.md` for the packaging roadmap (pip/pipx CLI plus optional Homebrew formula).
+
+Operational Checklist
+---------------------
+- **Repo hygiene:** rename `interactive demo.py` → `interactive_demo.py`; add MIT `LICENSE`; note “educational, not production crypto” in README; include `.gitignore`, `.editorconfig`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`.
+- **pyproject:** add authors, license, keywords, classifiers (Python 3.8–3.12), project URLs; surface `__version__` via `importlib.metadata`.
+- **CLI polish:** support `--rot13`, `--show-mapping`, `--input/--output`, `--no-color`, `--version`; fall back to REPL when no args; exit code `0` on success, `2` on usage errors.
+- **Tests:** property checks for decode(encode(x,s),s) == x (s=1..25); ROT13 twice returns original; non-letters unchanged, case preserved; optional Hypothesis fuzzing; ensure coverage ≥90% using `coverage.py`.
+- **Lint/typing/CI:** run `ruff`, `mypy`, `pytest` in GitHub Actions matrix (Linux/macOS/Windows, Python 3.8–3.12); add `pre-commit` hooks (`ruff`, optional `black`, end-of-file fixer).
+- **Build/release:** build via `python -m build`; verify with `twine check` and upload; sign tags and attach wheel/sdist; README needs pipx install plus stdin usage examples.
+- **Homebrew:** run `brew audit --new --strict`; bump formula with `brew bump-formula-pr` each release and refresh `sha256`.
+- **Docs:** expand README with Quick start, Examples, REPL keys, FAQ (“Why shifts 1–25?”), Limitations; record a short demo GIF.
+- **Nice-to-have:** add `--alphabet` for custom character sets, shell completions via `argcomplete`, config defaults from `~/.caesar.toml`.
 
 Instructor Notes
 ----------------

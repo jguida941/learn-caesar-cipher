@@ -51,7 +51,7 @@ def decode_msg(text, shift):
 
 if __name__ == "__main__":
     while True:
-        text_in = input("Enter text to encode: ")
+        text_in = input("Enter text to encode/decode: ")
         shift_in = int(input("Enter shift (1–25): "))
         mode = input("Type 'd' to decode, Type 'e' encode, or 'q' to quit: ").lower()
 
