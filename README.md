@@ -14,14 +14,21 @@ Repository Layout
 .
 ├── README.md
 ├── updates.md                 # Packaging, CI, and release roadmap
-├── caesar_cli/               # Installable pip/pipx package scaffold
-└── src/
-    ├── __init__.py
-    ├── caesar_cipher.py       # Intermediate implementation
-    ├── caesar_educational.py  # Beginner-friendly walkthrough
-    ├── interactive_demo.py    # Interactive encode/decode loop
-    ├── letter_mapping.py      # Alphabet rotation visualizer
-    └── caesar_qt_app.py       # Optional PyQt6 desktop app
+├── caesar_cli/               # Installable pip/pipx package scaffold (legacy tests)
+├── src/
+│   ├── caesarcipher/         # Modular GUI/CLI package
+│   │   ├── app.py            # QApplication bootstrap
+│   │   ├── cli.py            # CLI entry point (`caesar` command)
+│   │   ├── config/           # Shared constants/defaults
+│   │   ├── core/             # Pure cipher helpers
+│   │   ├── logic/            # Controller wiring widgets ↔ logic
+│   │   └── ui/               # Reusable widgets (status banner, history panel, etc.)
+│   ├── caesar_cipher.py      # Intermediate implementation
+│   ├── caesar_educational.py # Beginner-friendly walkthrough
+│   ├── interactive_demo.py   # Interactive encode/decode loop
+│   ├── letter_mapping.py     # Alphabet rotation visualizer
+│   └── caesar_qt_app.py      # Backward-compatible GUI shim (calls `caesarcipher.app.run`)
+└── tests/                    # New pytest suite (core + Qt widgets)
 ```
 
 Quick Start
@@ -41,12 +48,20 @@ Quick Start
    python -m src.caesar_qt_app
    ```
 
+4. Explore the modular package:
+   ```bash
+   python -m caesarcipher.app      # launch the refactored GUI
+   python -m caesarcipher.cli -s 3 "hello"
+   ```
+   > Windows tip: PowerShell prefers double quotes (`"…"`); examples using single quotes need adjusting when copy/pasted.
+
 To explore the new package scaffold:
 
 ```bash
 cd caesar_cli
 pip install -e .[dev]
 caesar --help
+caesar            # launches the interactive REPL (supply args to run once)
 ```
 
 Sample Interactive Run
@@ -93,6 +108,8 @@ Where to Go Next
 ----------------
 - The forward-looking roadmap and packaging plan live in `updates.md`.
 - Future work includes a polished CLI package (pip/pipx installable) and optional Homebrew wrapper as described in that document.
+- Continuous integration is configured in `.github/workflows/ci.yml` (ruff, mypy, pytest, build).
+- Local smoke tests: `ruff check`, `mypy src`, `pytest -q`.
 - Contributions, suggestions, or classroom adaptations are welcome—feel free to open an issue or fork the repository.
 
 Testing & CI Roadmap

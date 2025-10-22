@@ -31,3 +31,9 @@ Thumbs.db
 *.log
 coverage.xml
 updates.md
+fix.md
+old.md
+upgrade.md
+
+# Screenshots
+Screenshot*.png
