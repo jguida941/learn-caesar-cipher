@@ -19,7 +19,8 @@ Repository Layout
     ├── caesar_educational.py  # Beginner-friendly walkthrough
     ├── letter_mapping.py      # Alphabet rotation visualizer
     ├── caesar_cipher.py       # Intermediate implementation
-    └── interactive_demo.py    # Interactive encode/decode loop
+    ├── interactive_demo.py    # Interactive encode/decode loop
+    └── caesar_qt_app.py       # Optional PyQt6 desktop app
 ```
 
 Quick Start
@@ -28,12 +29,15 @@ Quick Start
 
 1. Clone the repository.
 2. (Optional) Activate your virtual environment.
+   - Install extras as needed, e.g. `pip install PyQt6` to launch the GUI.
 3. Run any script with Python 3.8+:
    ```bash
    python -m src.caesar_educational
    python -m src.letter_mapping
    python -m src.caesar_cipher
    python -m src.interactive_demo
+   # Optional PyQt6 GUI (pip install PyQt6 first)
+   python -m src.caesar_qt_app
    ```
 
 Sample Interactive Run
@@ -58,6 +62,8 @@ Choose Your Path
   Focuses on the core `caesar()` helper with concise validation and demonstrations of encode/decode helper functions.
 - **Sandbox – `src/interactive_demo.py`**  
   Provides an infinite loop where learners can choose encode or decode, pick shift values, and experiment with their own phrases.
+- **GUI – `src/caesar_qt_app.py`**  
+  PyQt6 desktop application with live encode/decode preview, alphabet mapping grid, ROT13 shortcut, and history panel (install PyQt6 to launch).
 
 Educational Highlights
 ----------------------
