@@ -4,7 +4,7 @@ Caesar Cipher Learning Pack
 A hands-on set of Python scripts for teaching and experimenting with the classic Caesar cipher. The project walks learners from alphabet visualizations all the way to a simple interactive sandbox.  
 > **Disclaimer:** This content is strictly educational and not intended for real cryptographic use.
 
-![Kapture 2025-10-21 at 22 04 23](https://github.com/user-attachments/assets/43b3b416-3755-4328-a408-3e4593cd7ef5)
+![Kapture 2025-10-21 at 21 57 58](https://github.com/user-attachments/assets/06aa5b6b-f502-466e-baec-5f554e61cd64)
 
 
 
