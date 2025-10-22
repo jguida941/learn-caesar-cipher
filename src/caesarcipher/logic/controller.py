@@ -94,8 +94,7 @@ class CaesarController(QtCore.QObject):
             source_char=LOWER[0] if encode else shifted_lower[0],
             target_char=shifted_lower[0] if encode else LOWER[0],
         )
-        focus_index = next(iter(sorted(indexes)), 0) if indexes else 0
-        focus_index = max(0, min(focus_index, 25))
+        focus_index = _resolve_focus_index(text, encode, shifted_lower, indexes)
         plain_char = LOWER[focus_index]
         cipher_char = shifted_lower[focus_index]
         self.deps.focus_card.update_focus(plain_char, cipher_char, shift, encode=encode)
@@ -141,6 +140,28 @@ def _collect_indices(text: str, shifted_lower: str, encode: bool) -> set[int]:
         if char in lookup:
             indices.add(lookup[char])
     return indices
+
+
+def _resolve_focus_index(
+    text: str,
+    encode: bool,
+    shifted_lower: str,
+    highlighted: set[int],
+) -> int:
+    if text:
+        lowered = text.lower()
+        if encode:
+            for char in reversed(lowered):
+                if char in LOWER:
+                    return LOWER.index(char)
+        else:
+            for char in reversed(lowered):
+                if char in shifted_lower:
+                    return shifted_lower.index(char)
+    if highlighted:
+        fallback = min(highlighted)
+        return max(0, min(25, fallback))
+    return 0
 
 
 __all__ = ["CaesarController", "ControllerDependencies"]

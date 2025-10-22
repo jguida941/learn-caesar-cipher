@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import Callable, Iterable, Sequence, cast
-
-try:  # rich is optional
-    from rich.console import Console
-except ImportError:  # pragma: no cover - optional dependency not installed
-    Console = None  # type: ignore[assignment]
+from typing import Callable, Iterable, Sequence, Tuple, cast
 
 from . import __version__
 from .core import decode, encode, mapping_pairs
+
+Printer = Callable[[str], None]
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -23,12 +20,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
 
     shift_group = parser.add_mutually_exclusive_group(required=False)
-    shift_group.add_argument(
-        "-s",
-        "--shift",
-        type=int,
-        help="Shift amount (1-25).",
-    )
+    shift_group.add_argument("-s", "--shift", type=int, help="Shift amount (1-25).")
     shift_group.add_argument(
         "-r",
         "--rot13",
@@ -37,131 +29,34 @@ def _build_parser() -> argparse.ArgumentParser:
     )
 
     mode_group = parser.add_mutually_exclusive_group(required=False)
-    mode_group.add_argument(
-        "-e",
-        "--encode",
-        action="store_true",
-        help="Force encode mode (default).",
-    )
-    mode_group.add_argument(
-        "-d",
-        "--decode",
-        action="store_true",
-        help="Decode text instead of encoding.",
-    )
+    mode_group.add_argument("-e", "--encode", action="store_true", help="Force encode mode (default).")
+    mode_group.add_argument("-d", "--decode", action="store_true", help="Decode text instead of encoding.")
 
     parser.add_argument(
         "text",
         nargs="?",
         help="Source text. If omitted, data is read from stdin or you will be prompted.",
     )
-    parser.add_argument(
-        "--show-mapping",
-        action="store_true",
-        help="Display the alphabet mapping table before output.",
-    )
-    parser.add_argument(
-        "--no-color",
-        action="store_true",
-        help="Disable colored output (auto-disabled when piping).",
-    )
-    parser.add_argument(
-        "--input",
-        type=str,
-        help="Read text from file instead of the TEXT argument or stdin.",
-    )
-    parser.add_argument(
-        "--output",
-        type=str,
-        help="Write result to file instead of stdout (overwrites).",
-    )
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"%(prog)s {__version__}",
-    )
-    parser.add_argument(
-        "--about",
-        action="store_true",
-        help="Show project information and exit.",
-    )
+    parser.add_argument("--show-mapping", action="store_true", help="Display the alphabet mapping table before output.")
+    parser.add_argument("--no-color", action="store_true", help="Disable colored output (auto-disabled when piping).")
+    parser.add_argument("--input", type=str, help="Read text from file instead of the TEXT argument or stdin.")
+    parser.add_argument("--output", type=str, help="Write result to file instead of stdout (overwrites).")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument("--about", action="store_true", help="Show project information and exit.")
     return parser
-
-
-def _coerce_shift(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    if args.rot13:
-        return 13
-
-    if args.shift is None:
-        parser.error("one of --shift/-s or --rot13 must be provided")
-    shift = cast(int, args.shift)
-    if not 1 <= shift <= 25:
-        parser.error("--shift must be in the range 1-25")
-    return shift
-
-
-def _resolve_text(args: argparse.Namespace) -> str:
-    if args.text is not None:
-        return cast(str, args.text)
-
-    if not sys.stdin.isatty():
-        return sys.stdin.read().rstrip("\n")
-
-    try:
-        return input("Text: ")
-    except EOFError:  # pragma: no cover - interactive edge case
-        return ""
-
-
-def _format_mapping(lines: Iterable[tuple[str, str]]) -> str:
-    left, right = zip(*lines)
-    header = "    " + " ".join(left)
-    mapped = "→   " + " ".join(right)
-    return f"{header}\n{mapped}"
-
-
-def _print_mapping(
-    shift: int,
-    encode_mode: bool,
-    printer: Callable[[str], None] = print,
-    color_enabled: bool = False,
-) -> None:
-    lower, upper = mapping_pairs(shift, encode=encode_mode)
-    mode_str = "Encoding" if encode_mode else "Decoding"
-    printer(f"{mode_str} mapping (shift {shift}):")
-    printer("Lowercase:")
-    printer(_format_mapping(lower))
-    printer("Uppercase:")
-    printer(_format_mapping(upper))
-    printer("-" * 30)
-
-
-def _get_printer(color_enabled: bool) -> Callable[[str], None]:
-    if color_enabled and Console is not None:
-        console = Console()
-
-        def rich_print(message: str) -> None:
-            console.print(message)
-
-        return rich_print
-    return print
 
 
 def main(argv: Iterable[str] | None = None) -> int:
     parser = _build_parser()
     cli_args: Sequence[str] | None = list(argv) if argv is not None else None
     args = parser.parse_args(cli_args)
-    color_enabled = (
-        not args.no_color
-        and sys.stdout.isatty()
-        and Console is not None
-    )
-    printer = _get_printer(color_enabled)
+
+    printer, color_enabled = _get_printer(not args.no_color and sys.stdout.isatty())
 
     if args.about:
         printer("Caesar CLI — educational command-line tool for the Caesar cipher.")
         printer("Repository: https://github.com/jguida941/caesar_cipher")
-        printer("Version:", __version__)
+        printer(f"Version: {__version__}")
         return 0
 
     if args.input and args.text is not None:
@@ -174,15 +69,10 @@ def main(argv: Iterable[str] | None = None) -> int:
         and not args.rot13
         and sys.stdin.isatty()
     ):
-        return repl(
-            default_shift=3,
-            show_mapping=args.show_mapping,
-            color_enabled=color_enabled,
-        )
+        return repl(default_shift=3, show_mapping=args.show_mapping, color_enabled=color_enabled)
 
     shift = _coerce_shift(args, parser)
     encode_mode = not args.decode
-    text = _resolve_text(args)
 
     if args.input:
         try:
@@ -191,6 +81,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         except OSError as exc:  # pragma: no cover - filesystem errors
             print(f"Error reading {args.input}: {exc}", file=sys.stderr)
             return 1
+    else:
+        text = _resolve_text(args)
 
     if args.show_mapping:
         _print_mapping(shift, encode_mode, printer, color_enabled)
@@ -211,9 +103,9 @@ def main(argv: Iterable[str] | None = None) -> int:
         except OSError as exc:  # pragma: no cover - filesystem errors
             print(f"Error writing {args.output}: {exc}", file=sys.stderr)
             return 1
-
-    if not args.output:
+    else:
         printer(result)
+
     return 0
 
 
@@ -225,9 +117,9 @@ def repl(
 ) -> int:
     """Interactive REPL for the Caesar CLI."""
 
+    printer, rich_enabled = _get_printer(color_enabled)
     last_shift = default_shift
     mapping_enabled = show_mapping
-    printer = _get_printer(color_enabled)
 
     try:
         while True:
@@ -272,7 +164,7 @@ def repl(
                 continue
 
             if mapping_enabled:
-                _print_mapping(shift, encode_mode, printer, color_enabled)
+                _print_mapping(shift, encode_mode, printer, rich_enabled)
 
             mode_label = "encode" if encode_mode else "decode"
             printer(f"Result ({mode_label}, shift {shift}): {result}")
@@ -288,8 +180,75 @@ def repl(
                 status = "enabled" if mapping_enabled else "disabled"
                 printer(f"Mapping display {status}.")
     except (KeyboardInterrupt, EOFError):  # pragma: no cover - user interruption
-        printer()
+        printer("")
         return 0
+
+
+def _get_printer(wants_color: bool) -> Tuple[Printer, bool]:
+    if wants_color:
+        try:
+            from rich.console import Console as RichConsole
+        except ImportError:
+            rich_console = None
+        else:
+            rich_console = RichConsole()
+            return cast(Printer, rich_console.print), True
+
+    def plain_print(message: str = "", **_: object) -> None:
+        print(message)
+
+    return plain_print, False
+
+
+def _coerce_shift(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    if args.rot13:
+        return 13
+
+    if args.shift is None:
+        parser.error("one of --shift/-s or --rot13 must be provided")
+    shift = cast(int, args.shift)
+    if not 1 <= shift <= 25:
+        parser.error("--shift must be in the range 1-25")
+    return shift
+
+
+def _resolve_text(args: argparse.Namespace) -> str:
+    if args.text is not None:
+        return cast(str, args.text)
+
+    if not sys.stdin.isatty():
+        return sys.stdin.read().rstrip("\n")
+
+    try:
+        return input("Text: ")
+    except EOFError:  # pragma: no cover - interactive edge case
+        return ""
+
+
+def _format_mapping(lines: Iterable[tuple[str, str]]) -> str:
+    left, right = zip(*lines)
+    header = "    " + " ".join(left)
+    mapped = "→   " + " ".join(right)
+    return f"{header}\n{mapped}"
+
+
+def _print_mapping(
+    shift: int,
+    encode_mode: bool,
+    printer: Printer,
+    rich_enabled: bool,
+) -> None:
+    lower, upper = mapping_pairs(shift, encode=encode_mode)
+    mode_str = "Encoding" if encode_mode else "Decoding"
+    if rich_enabled:
+        printer(f"[bold cyan]{mode_str} mapping[/] (shift {shift}):")
+        printer("[italic]Lowercase:[/]")
+    else:
+        printer(f"{mode_str} mapping (shift {shift}):")
+        printer("Lowercase:")
+    printer(_format_mapping(lower))
+    printer("Uppercase:")
+    printer("-" * 30)
 
 
 if __name__ == "__main__":  # pragma: no cover
