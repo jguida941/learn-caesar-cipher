@@ -20,14 +20,29 @@ Repository Layout
 
 Quick Start
 -----------
-1. Optional: activate a virtual environment (`python -m venv .venv && source .venv/bin/activate`).
-2. Run any script with Python 3.8+:
+**Prerequisites:** Python 3.8 or newer. A virtual environment is recommended (`python -m venv .venv && source .venv/bin/activate`).
+
+1. Clone the repository.
+2. (Optional) Activate your virtual environment.
+3. Run any script with Python 3.8+:
    ```bash
    python -m src.caesar_educational
    python -m src.letter_mapping
    python -m src.caesar_cipher
    python -m src.interactive_demo
    ```
+
+Sample Interactive Run
+----------------------
+```bash
+$ python -m src.interactive_demo
+Enter text to encode: hello world
+Enter shift (1–25): 5
+Type 'd' to decode, Type 'e' encode, or 'q' to quit: e
+
+--- Interactive Result ---
+Result: mjqqt btwqi
+```
 
 Choose Your Path
 ----------------
@@ -46,11 +61,27 @@ Educational Highlights
 - Examples show both lowercase and uppercase handling plus non-letter preservation.
 - The interactive demo encourages experimentation without restarting the script.
 
+What You’ll Learn
+-----------------
+- How substitution ciphers rotate alphabets and why valid shifts are 1–25.
+- Using Python’s `str.maketrans()` and `str.translate()` to build mapping tables.
+- Structuring helper functions (`encode_msg`, `decode_msg`) for clarity.
+- Building simple command-line loops and validating user input.
+
 Where to Go Next
 ----------------
 - The forward-looking roadmap and packaging plan live in `updates.md`.
 - Future work includes a polished CLI package (pip/pipx installable) and optional Homebrew wrapper as described in that document.
 - Contributions, suggestions, or classroom adaptations are welcome—feel free to open an issue or fork the repository.
+
+Further Reading
+---------------
+- [Python `str.translate` documentation](https://docs.python.org/3/library/stdtypes.html#str.translate)
+- [Python `str.maketrans` documentation](https://docs.python.org/3/library/stdtypes.html#str.maketrans)
+- [An introduction to substitution ciphers](https://en.wikipedia.org/wiki/Substitution_cipher)
+- [GeeksforGeeks: Caesar Cipher in Cryptography](https://www.geeksforgeeks.org/ethical-hacking/caesar-cipher-in-cryptography/)
+- [FreeCodeCamp Caesar Cipher Workshop](https://www.freecodecamp.org/learn/full-stack-developer/workshop-caesar-cipher/step-1)
+- [YouTube: Caesar Cipher Explained](https://www.youtube.com/watch?v=sMOZf4GN3oc)
 
 License
 -------
