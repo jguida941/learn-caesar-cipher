@@ -7,6 +7,9 @@ A hands-on set of Python scripts for teaching and experimenting with the classic
 ![Kapture 2025-10-21 at 22 08 40](https://github.com/user-attachments/assets/4e91df38-ec17-4236-91f1-705ca67bf7e0)
 
 
+![Kapture 2025-10-23 at 05 57 44](https://github.com/user-attachments/assets/6f90ea47-93f0-4505-a88f-d4b8681b9542)
+
+
 
 Repository Layout
 -----------------
