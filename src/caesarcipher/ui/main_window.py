@@ -25,12 +25,18 @@ class CaesarWindow(QtWidgets.QWidget):
         self.input_edit = FocusAwarePlainTextEdit()
         self.input_edit.setPlaceholderText("Enter text…")
         self.input_edit.setMinimumHeight(180)
-        self.input_edit.setMaximumHeight(280)
+        self.input_edit.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
         self.output_edit = QtWidgets.QPlainTextEdit()
         self.output_edit.setReadOnly(True)
         self.output_edit.setToolTip("Cipher output appears here (read-only).")
         self.output_edit.setMinimumHeight(180)
-        self.output_edit.setMaximumHeight(280)
+        self.output_edit.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
 
         self.shift_spin = QtWidgets.QSpinBox()
         self.shift_spin.setRange(defaults.MIN_SHIFT, defaults.MAX_SHIFT)
@@ -59,7 +65,8 @@ class CaesarWindow(QtWidgets.QWidget):
         self.status_banner = StatusBanner()
         self.info_panel = InfoPanel()
         self.mapping_table = MappingTableWidget()
-        self.mapping_focus = MappingFocusCard()
+        self.mapping_focus = MappingFocusCard(self)
+        self.mapping_focus.hide()
         self.history_panel = HistoryPanel()
         self.history_panel.setToolTip("Double-click an item to reuse that result as new input.")
         self.info_toggle = QtWidgets.QToolButton()
@@ -91,6 +98,12 @@ class CaesarWindow(QtWidgets.QWidget):
         self.mapping_stack.addWidget(self.mapping_table)
         self.mapping_stack.addWidget(self.info_panel)
         self.mapping_stack.setCurrentWidget(self.mapping_table)
+        self.mapping_stack.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Fixed,
+        )
+        self.mapping_stack.setMinimumHeight(self.info_panel.sizeHint().height())
+        self.mapping_stack.setMaximumHeight(self.mapping_table.sizeHint().height())
 
         self.controller = CaesarController(
             ControllerDependencies(
@@ -141,34 +154,24 @@ class CaesarWindow(QtWidgets.QWidget):
         top_layout.addWidget(
             self.info_toggle, alignment=QtCore.Qt.AlignmentFlag.AlignCenter
         )
+        top_layout.setStretch(1, 1)
+        top_layout.setStretch(3, 1)
         top_section.setMinimumHeight(340)
         top_section.setSizePolicy(
             QtWidgets.QSizePolicy.Policy.Preferred,
             QtWidgets.QSizePolicy.Policy.MinimumExpanding,
         )
 
-        bottom_section = QtWidgets.QWidget()
-        bottom_layout = QtWidgets.QVBoxLayout(bottom_section)
-        bottom_layout.setContentsMargins(0, 0, 0, 0)
-        bottom_layout.setSpacing(4)
-        bottom_layout.addWidget(self.mapping_stack)
-        bottom_layout.addWidget(self.mapping_focus)
-        bottom_section.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred,
-            QtWidgets.QSizePolicy.Policy.Expanding,
-        )
-
-        vertical_split = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
-        vertical_split.addWidget(top_section)
-        vertical_split.addWidget(bottom_section)
-        vertical_split.setHandleWidth(6)
-        vertical_split.setChildrenCollapsible(False)
-        vertical_split.setSizes([420, 360])
-        vertical_split.setStretchFactor(0, 2)
-        vertical_split.setStretchFactor(1, 3)
+        left_panel = QtWidgets.QWidget()
+        left_layout = QtWidgets.QVBoxLayout(left_panel)
+        left_layout.setContentsMargins(0, 0, 0, 0)
+        left_layout.setSpacing(6)
+        left_layout.addWidget(top_section, stretch=1)
+        left_layout.addWidget(self.mapping_stack)
+        left_layout.setStretch(0, 1)
 
         splitter = QtWidgets.QSplitter()
-        splitter.addWidget(vertical_split)
+        splitter.addWidget(left_panel)
         splitter.addWidget(self.history_panel)
         splitter.setHandleWidth(6)
         splitter.setChildrenCollapsible(False)
@@ -201,7 +204,7 @@ class CaesarWindow(QtWidgets.QWidget):
         self.info_toggle.setChecked(False)
         self.status_banner.setVisible(True)
         self.mapping_stack.setVisible(True)
-        self.mapping_focus.setVisible(True)
+        # mapping focus card stays hidden; controller still updates it for consistency
 
     # Slots --------------------------------------------------------------
     def _copy_result(self) -> None:
@@ -258,7 +261,6 @@ class CaesarWindow(QtWidgets.QWidget):
 
     def _toggle_mapping_visibility(self, checked: bool) -> None:
         self.mapping_stack.setVisible(checked)
-        self.mapping_focus.setVisible(checked)
         self.status_banner.setVisible(checked)
         if checked:
             target = self.info_panel if self._info_visible else self.mapping_table
