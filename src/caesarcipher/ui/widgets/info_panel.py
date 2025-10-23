@@ -16,18 +16,17 @@ class InfoPanel(QtWidgets.QFrame):
         super().__init__(parent)
         self.setObjectName("infoPanel")
 
-        self.setMaximumHeight(120)
         self.setSizePolicy(
             QtWidgets.QSizePolicy.Policy.Preferred,
-            QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
         )
 
         layout = QtWidgets.QVBoxLayout(self)
-        layout.setContentsMargins(16, 12, 16, 12)
-        layout.setSpacing(8)
+        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(10)
 
         self.heading = QtWidgets.QLabel("How it works")
-        self.heading.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.heading.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.heading.setStyleSheet(
             f"color: {ACCENT_COLOR}; font-size: 16px; font-weight: 600;"
         )
@@ -36,7 +35,7 @@ class InfoPanel(QtWidgets.QFrame):
         self.body.setWordWrap(True)
         self.body.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.body.setStyleSheet(
-            f"color: {TEXT_COLOR}; font-size: 13px;"
+            f"color: {TEXT_COLOR}; font-size: 13px; line-height: 1.4;"
         )
         self.body.setText(
             "Encoding: (index + shift) mod 26 → wraps forward.\n"
@@ -51,9 +50,12 @@ class InfoPanel(QtWidgets.QFrame):
         self.setStyleSheet(
             """
             QFrame#infoPanel {
-                background: #16161d;
+                background: rgba(18, 18, 18, 0.92);
                 border: 1px solid #2D2D2D;
                 border-radius: 10px;
+            }
+            QFrame#infoPanel QLabel {
+                background: transparent;
             }
             """
         )

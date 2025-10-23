@@ -102,8 +102,7 @@ class CaesarWindow(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.Policy.Preferred,
             QtWidgets.QSizePolicy.Policy.Fixed,
         )
-        self.mapping_stack.setMinimumHeight(self.info_panel.sizeHint().height())
-        self.mapping_stack.setMaximumHeight(self.mapping_table.sizeHint().height())
+        self._adjust_mapping_stack_height(self.mapping_table)
 
         self.controller = CaesarController(
             ControllerDependencies(
@@ -206,6 +205,12 @@ class CaesarWindow(QtWidgets.QWidget):
         self.mapping_stack.setVisible(True)
         # mapping focus card stays hidden; controller still updates it for consistency
 
+    def _adjust_mapping_stack_height(self, widget: QtWidgets.QWidget) -> None:
+        """Clamp the stacked widget height to its current child."""
+        hint = max(1, widget.sizeHint().height())
+        self.mapping_stack.setFixedHeight(hint)
+        self.mapping_stack.updateGeometry()
+
     # Slots --------------------------------------------------------------
     def _copy_result(self) -> None:
         clipboard = QtWidgets.QApplication.clipboard()
@@ -237,6 +242,7 @@ class CaesarWindow(QtWidgets.QWidget):
 
     def _show_info_card(self, *, from_toggle: bool = False) -> None:
         self.mapping_stack.setCurrentWidget(self.info_panel)
+        self._adjust_mapping_stack_height(self.info_panel)
         self._info_visible = True
         if not from_toggle:
             self.info_toggle.blockSignals(True)
@@ -246,6 +252,7 @@ class CaesarWindow(QtWidgets.QWidget):
 
     def _show_mapping_card(self, *, from_toggle: bool = False) -> None:
         self.mapping_stack.setCurrentWidget(self.mapping_table)
+        self._adjust_mapping_stack_height(self.mapping_table)
         self._info_visible = False
         if not from_toggle:
             self.info_toggle.blockSignals(True)
@@ -265,6 +272,7 @@ class CaesarWindow(QtWidgets.QWidget):
         if checked:
             target = self.info_panel if self._info_visible else self.mapping_table
             self.mapping_stack.setCurrentWidget(target)
+            self._adjust_mapping_stack_height(target)
         else:
             self._show_mapping_card()
 
