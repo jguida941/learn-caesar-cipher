@@ -131,6 +131,3 @@ Further Reading
 - [FreeCodeCamp Caesar Cipher Workshop](https://www.freecodecamp.org/learn/full-stack-developer/workshop-caesar-cipher/step-1)
 - [YouTube: Caesar Cipher Explained](https://www.youtube.com/watch?v=sMOZf4GN3oc)
 
-License
--------
-Licensed under the MIT License. See `LICENSE` (to be added) for details.
