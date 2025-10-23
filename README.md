@@ -7,28 +7,54 @@ A hands-on set of Python scripts for teaching and experimenting with the classic
 ![Kapture 2025-10-21 at 22 08 40](https://github.com/user-attachments/assets/4e91df38-ec17-4236-91f1-705ca67bf7e0)
 
 
+![Kapture 2025-10-23 at 05 57 44](https://github.com/user-attachments/assets/6f90ea47-93f0-4505-a88f-d4b8681b9542)
+
+
 
 Repository Layout
 -----------------
 ```
 .
 ├── README.md
-├── updates.md                 # Packaging, CI, and release roadmap
-├── caesar_cli/               # Installable pip/pipx package scaffold (legacy tests)
+├── updates.md                  # Packaging, CI, and release roadmap
+├── caesar_cli/                 # Installable pip/pipx package scaffold (legacy tests)
 ├── src/
-│   ├── caesarcipher/         # Modular GUI/CLI package
-│   │   ├── app.py            # QApplication bootstrap
-│   │   ├── cli.py            # CLI entry point (`caesar` command)
-│   │   ├── config/           # Shared constants/defaults
-│   │   ├── core/             # Pure cipher helpers
-│   │   ├── logic/            # Controller wiring widgets ↔ logic
-│   │   └── ui/               # Reusable widgets (status banner, history panel, etc.)
-│   ├── caesar_cipher.py      # Intermediate implementation
-│   ├── caesar_educational.py # Beginner-friendly walkthrough
-│   ├── interactive_demo.py   # Interactive encode/decode loop
-│   ├── letter_mapping.py     # Alphabet rotation visualizer
-│   └── caesar_qt_app.py      # Backward-compatible GUI shim (calls `caesarcipher.app.run`)
-└── tests/                    # New pytest suite (core + Qt widgets)
+│   ├── __init__.py
+│   ├── caesar_cipher.py        # Intermediate implementation
+│   ├── caesar_educational.py   # Beginner-friendly walkthrough
+│   ├── caesar_qt_app.py        # Legacy GUI shim (calls `caesarcipher.app.run`)
+│   ├── interactive_demo.py     # Interactive encode/decode loop
+│   ├── letter_mapping.py       # Alphabet rotation visualizer
+│   └── caesarcipher/
+│       ├── __init__.py
+│       ├── app.py              # QApplication bootstrap
+│       ├── cli.py              # CLI entry point (`caesar` command)
+│       ├── py.typed
+│       ├── config/
+│       │   ├── __init__.py
+│       │   └── defaults.py
+│       ├── core/
+│       │   ├── __init__.py
+│       │   └── crypto.py
+│       ├── logic/
+│       │   ├── __init__.py
+│       │   └── controller.py
+│       └── ui/
+│           ├── __init__.py
+│           ├── main_window.py
+│           ├── theme.py
+│           └── widgets/
+│               ├── __init__.py
+│               ├── common.py
+│               ├── history_panel.py
+│               ├── info_panel.py
+│               ├── mapping_focus_card.py
+│               ├── mapping_table.py
+│               └── status_banner.py
+└── tests/
+    ├── conftest.py
+    ├── test_crypto.py
+    └── test_ui.py
 ```
 
 Quick Start
@@ -127,7 +153,3 @@ Further Reading
 - [GeeksforGeeks: Caesar Cipher in Cryptography](https://www.geeksforgeeks.org/ethical-hacking/caesar-cipher-in-cryptography/)
 - [FreeCodeCamp Caesar Cipher Workshop](https://www.freecodecamp.org/learn/full-stack-developer/workshop-caesar-cipher/step-1)
 - [YouTube: Caesar Cipher Explained](https://www.youtube.com/watch?v=sMOZf4GN3oc)
-
-License
--------
-Licensed under the MIT License. See `LICENSE` (to be added) for details.
